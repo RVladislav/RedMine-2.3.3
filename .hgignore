@@ -6,7 +6,6 @@ config/additional_environment.rb
 config/configuration.yml
 config/database.yml
 config/email.yml
-config/initializers/session_store.rb
 config/initializers/secret_token.rb
 coverage
 db/*.db
@@ -18,7 +17,6 @@ lib/redmine/scm/adapters/mercurial/redminehelper.pyo
 log/*.log*
 log/mongrel_debug
 public/dispatch.*
-public/plugin_assets
 tmp/*
 tmp/cache/*
 tmp/pdf/*
@@ -34,6 +32,4 @@ vendor/rails
 .git/
 
 .bundle
-Gemfile.lock
-Gemfile.local
 
