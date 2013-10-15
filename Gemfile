@@ -12,9 +12,6 @@ group :ldap do
   gem "net-ldap", "~> 0.3.1"
 end
 
-# Gemfile.local
-gem 'puma'
-
 # Optional gem for OpenID authentication
 group :openid do
   gem "ruby-openid", "~> 2.2.3", :require => "openid"
