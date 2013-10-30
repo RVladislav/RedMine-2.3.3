@@ -6,7 +6,7 @@ gem "i18n", "~> 0.6.0"
 gem "coderay", "~> 1.0.9"
 gem "fastercsv", "~> 1.5.0", :platforms => [:mri_18, :mingw_18, :jruby]
 gem "builder", "3.0.0"
-gem "pg", ">= 0.11.0"
+gem "pg", ">= 0.11.0", :platforms => [:mri, :mingw]
 
 # Optional gem for LDAP authentication
 group :ldap do
@@ -71,10 +71,11 @@ if File.exist?(database_file)
 else
   warn("Please configure your config/database.yml first")
 end
-
+  
 group :development do
   gem "rdoc", ">= 2.4.2"
   gem "yard"
+  gem "sqlite3"
 end
 
 group :test do
