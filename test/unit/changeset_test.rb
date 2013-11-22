@@ -30,11 +30,8 @@ class ChangesetTest < ActiveSupport::TestCase
 
   def test_ref_keywords_any
     ActionMailer::Base.deliveries.clear
-    Setting.commit_fix_status_id = IssueStatus.find(
-                                   :first, :conditions => ["is_closed = ?", true]).id
-    Setting.commit_fix_done_ratio = '90'
     Setting.commit_ref_keywords = '*'
-    Setting.commit_fix_keywords = 'fixes , closes'
+    Setting.commit_update_keywords = {'fixes , closes' => {'status_id' => '5', 'done_ratio' => '90'}}
 
     c = Changeset.new(:repository   => Project.find(1).repository,
                       :committed_on => Time.now,
@@ -50,7 +47,7 @@ class ChangesetTest < ActiveSupport::TestCase
 
   def test_ref_keywords
     Setting.commit_ref_keywords = 'refs'
-    Setting.commit_fix_keywords = ''
+    Setting.commit_update_keywords = ''
     c = Changeset.new(:repository   => Project.find(1).repository,
                       :committed_on => Time.now,
                       :comments     => 'Ignores #2. Refs #1',
@@ -61,7 +58,7 @@ class ChangesetTest < ActiveSupport::TestCase
 
   def test_ref_keywords_any_only
     Setting.commit_ref_keywords = '*'
-    Setting.commit_fix_keywords = ''
+    Setting.commit_update_keywords = ''
     c = Changeset.new(:repository   => Project.find(1).repository,
                       :committed_on => Time.now,
                       :comments     => 'Ignores #2. Refs #1',
@@ -113,10 +110,12 @@ class ChangesetTest < ActiveSupport::TestCase
   end
 
   def test_ref_keywords_closing_with_timelog
-    Setting.commit_fix_status_id = IssueStatus.find(
-                                    :first, :conditions => ["is_closed = ?", true]).id
     Setting.commit_ref_keywords = '*'
-    Setting.commit_fix_keywords = 'fixes , closes'
+    Setting.commit_update_keywords = {
+      'fixes , closes' => {
+        'status_id' => IssueStatus.where(:is_closed => true).first.id.to_s
+      }
+    }
     Setting.commit_logtime_enabled = '1'
 
     c = Changeset.new(:repository   => Project.find(1).repository,
@@ -165,6 +164,23 @@ class ChangesetTest < ActiveSupport::TestCase
     assert_equal [1,2,3], c.issue_ids.sort
   end
 
+  def test_update_keywords_with_multiple_rules
+    Setting.commit_update_keywords = {
+      'fixes, closes' => {'status_id' => '5'},
+      'resolves' => {'status_id' => '3'}
+    }
+    issue1 = Issue.generate!
+    issue2 = Issue.generate!
+
+    c = Changeset.new(:repository   => Project.find(1).repository,
+                      :committed_on => Time.now,
+                      :comments     => "Closes ##{issue1.id}\nResolves ##{issue2.id}",
+                      :revision     => '12345')
+    assert c.save
+    assert_equal 5, issue1.reload.status_id
+    assert_equal 3, issue2.reload.status_id
+  end
+
   def test_commit_referencing_a_subproject_issue
     c = Changeset.new(:repository   => Project.find(1).repository,
                       :committed_on => Time.now,
@@ -176,7 +192,7 @@ class ChangesetTest < ActiveSupport::TestCase
   end
 
   def test_commit_closing_a_subproject_issue
-    with_settings :commit_fix_status_id => 5, :commit_fix_keywords => 'closes',
+    with_settings :commit_update_keywords => {'closes' => {'status_id' => '5'}},
                   :default_language => 'en' do
       issue = Issue.find(5)
       assert !issue.closed?
@@ -236,6 +252,28 @@ class ChangesetTest < ActiveSupport::TestCase
       assert c.save
       assert_equal [4], c.issue_ids
     end
+  end
+
+  def test_old_commits_should_not_update_issues_nor_log_time
+    Setting.commit_ref_keywords = '*'
+    Setting.commit_update_keywords = {'fixes , closes' => {'status_id' => '5', 'done_ratio' => '90'}}
+    Setting.commit_logtime_enabled = '1'
+
+    repository = Project.find(1).repository
+    repository.created_on = Time.now
+    repository.save!
+
+    c = Changeset.new(:repository   => repository,
+                      :committed_on => 1.month.ago,
+                      :comments     => 'New commit (#2). Fixes #1 @1h',
+                      :revision     => '12345')
+    assert_no_difference 'TimeEntry.count' do
+      assert c.save
+    end
+    assert_equal [1, 2], c.issue_ids.sort
+    issue = Issue.find(1)
+    assert_equal 1, issue.status_id
+    assert_equal 0, issue.done_ratio
   end
 
   def test_text_tag_revision

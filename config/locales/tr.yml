@@ -151,6 +151,7 @@ tr:
         not_same_project: "aynı projeye ait değil"
         circular_dependency: "Bu ilişki döngüsel bağımlılık meydana getirecektir"
         cant_link_an_issue_with_a_descendant: "Bir iş, alt işlerinden birine bağlanamaz"
+        earlier_than_minimum_start_date: "cannot be earlier than %{date} because of preceding issues"
       models:
 
   actionview_instancetag_blank_option: Lütfen Seçin
@@ -183,7 +184,7 @@ tr:
   notice_not_authorized: Bu sayfaya erişme yetkiniz yok.
   notice_email_sent: "E-posta gönderildi %{value}"
   notice_email_error: "E-posta gönderilirken bir hata oluştu (%{value})"
-  notice_feeds_access_key_reseted: RSS erişim anahtarınız sıfırlandı.
+  notice_feeds_access_key_reseted: Atom erişim anahtarınız sıfırlandı.
   notice_failed_to_save_issues: "Failed to save %{count} issue(s) on %{total} selected: %{ids}."
   notice_no_issue_selected: "Seçili iş yok! Lütfen, düzenlemek istediğiniz işleri işaretleyin."
   notice_account_pending: "Hesabınız oluşturuldu ve yönetici onayı bekliyor."
@@ -595,7 +596,7 @@ tr:
   label_language_based: Kullanıcı dili bazlı
   label_sort_by: "%{value} göre sırala"
   label_send_test_email: Test e-postası gönder
-  label_feeds_access_key_created_on: "RSS erişim anahtarı %{value} önce oluşturuldu"
+  label_feeds_access_key_created_on: "Atom erişim anahtarı %{value} önce oluşturuldu"
   label_module_plural: Modüller
   label_added_time_by: "%{author} tarafından %{age} önce eklendi"
   label_updated_time: "%{value} önce güncellendi"
@@ -894,11 +895,11 @@ tr:
   label_revision_id: Değişiklik %{value}
   label_api_access_key: API erişim anahtarı
   label_api_access_key_created_on: API erişim anahtarı %{value} önce oluşturuldu
-  label_feeds_access_key: RSS erişim anahtarı
+  label_feeds_access_key: Atom erişim anahtarı
   notice_api_access_key_reseted: API erişim anahtarınız sıfırlandı.
   setting_rest_api_enabled: REST web servisini etkinleştir
   label_missing_api_access_key: Bir API erişim anahtarı eksik
-  label_missing_feeds_access_key: Bir RSS erişim anahtarı eksik
+  label_missing_feeds_access_key: Bir Atom erişim anahtarı eksik
   button_show: Göster
   text_line_separated: Çoklu değer girilebilir (her satıra bir değer).
   setting_mail_handler_body_delimiters: Şu satırların birinden sonra e-postayı sonlandır
@@ -1102,7 +1103,19 @@ tr:
   setting_jsonp_enabled: Enable JSONP support
   field_inherit_members: Inherit members
   field_closed_on: Closed
+  field_generate_password: Generate password
   setting_default_projects_tracker_ids: Default trackers for new projects
   label_total_time: Toplam
   text_scm_config: You can configure your SCM commands in config/configuration.yml. Please restart the application after editing it.
   text_scm_command_not_available: SCM command is not available. Please check settings on the administration panel.
+  notice_account_not_activated_yet: You haven't activated your account yet. If you want
+    to receive a new activation email, please <a href="%{url}">click this link</a>.
+  notice_account_locked: Your account is locked.
+  label_hidden: Hidden
+  label_visibility_private: to me only
+  label_visibility_roles: to these roles only
+  label_visibility_public: to any users
+  field_must_change_passwd: Must change password at next logon
+  notice_new_password_must_be_different: The new password must be different from the
+    current password
+  setting_mail_handler_excluded_filenames: Exclude attachments by name

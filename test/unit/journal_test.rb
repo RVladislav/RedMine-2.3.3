@@ -137,7 +137,7 @@ class JournalTest < ActiveSupport::TestCase
     user.reload
     journals = Journal.visible(user).all
     assert journals.empty?
-    # User should see issues of projects for which he has view_issues permissions only
+    # User should see issues of projects for which user has view_issues permissions only
     Member.create!(:principal => user, :project_id => 1, :role_ids => [1])
     user.reload
     journals = Journal.visible(user).all
@@ -151,7 +151,7 @@ class JournalTest < ActiveSupport::TestCase
     assert user.projects.empty?
     journals = Journal.visible(user).all
     assert journals.any?
-    # Admin should see issues on private projects that he does not belong to
+    # Admin should see issues on private projects that admin does not belong to
     assert journals.detect {|journal| !journal.issue.project.is_public?}
   end
 
@@ -174,5 +174,24 @@ class JournalTest < ActiveSupport::TestCase
     j.reload
     assert_equal '0', j.old_value
     assert_equal '0', j.value
+  end
+
+  def test_visible_details_should_include_relations_to_visible_issues_only
+    issue = Issue.generate!
+    visible_issue = Issue.generate!
+    IssueRelation.create!(:issue_from => issue, :issue_to => visible_issue, :relation_type => 'relates')
+    hidden_issue = Issue.generate!(:is_private => true)
+    IssueRelation.create!(:issue_from => issue, :issue_to => hidden_issue, :relation_type => 'relates')
+    issue.reload
+    assert_equal 1, issue.journals.size
+    journal = issue.journals.first
+    assert_equal 2, journal.details.size
+
+    visible_details = journal.visible_details(User.anonymous)
+    assert_equal 1, visible_details.size
+    assert_equal visible_issue.id.to_s, visible_details.first.value
+
+    visible_details = journal.visible_details(User.find(2))
+    assert_equal 2, visible_details.size
   end
 end
