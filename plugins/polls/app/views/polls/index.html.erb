@@ -5,3 +5,4 @@
   <%= link_to 'No', { :action => 'vote', :id => poll[:id], :answer => 'no' }, :method => :post %> (<%= poll.no %>)
   </p>
 <% end %>
+<%= button_to 'Votes', { :action => 'show', :controller => 'polls'}, :method => :post %>
