@@ -6,7 +6,7 @@
 	<% @us.each do |allusers| %>
 	<%= allusers.firstname %>
 	<%= allusers.lastname %>
-	<% end %>
+	
 	<% @answe = Answers.where(id: [u.answers_id]) %>
 	<% @answe.each do |a| %>
 		<% @a = a.textAnswer %>
@@ -22,4 +22,5 @@
 	Ответ:
 	<%= @a %>
 	</p>
+<% end %>
 <% end %>
