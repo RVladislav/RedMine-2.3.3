@@ -1,17 +1,17 @@
-<% @radio = 0 %>
-<% @n = 'answerYesNo' %>
+<%= button_to 'Add new question' %>
+<% @i = 1%>
 <% @ques.each do |q| %>
 <p>
-<%= @radio = @radio + 1 %>)
-<%= q.question %>?
+<%= @i %>)
+<%= q.textQuestion %>?
 <br>
-<%= radio_button_tag name = @n, 'true', false, { :answer => 'true' } %> Да
-<br>
-<%= radio_button_tag name = @n, 'false', false, { :answer => 'false' } %> Нет
-<br>
-<%= radio_button_tag name = @n, 'false', false %>
-<%= text_field_tag 'answerText', '', { :answer => 'text' } %>
-<% @n+='1' %>
+<% @ansMany = Answers.where(questions_id: [@i]) %>
+<% @ansMany.each do |a| %>
+<p>
+<%= radio_button_tag name = @i, 'true', false %> <%= a.textAnswer %>
 </p>
+</p>
+<% end %>
+<% @i = @i + 1 %>
 <% end %>
 <%= button_to 'Save', { :action => 'ans', :controller => 'questions'}, :method => :post %>

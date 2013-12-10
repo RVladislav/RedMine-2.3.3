@@ -6,7 +6,7 @@ class QuestionsController < ApplicationController
   end
   
   def ans 
-	flash[:notice] = 'Work'
+	flash[:notice] = 'Save'
 	redirect_to :action => 'index'
   end
 end
