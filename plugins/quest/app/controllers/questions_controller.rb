@@ -1,6 +1,5 @@
 class QuestionsController < ApplicationController
   unloadable
-
   def index
 	@ques = Questions.all
   end
@@ -8,12 +7,25 @@ class QuestionsController < ApplicationController
   def showans
     @ua = Useranswer.all
     @ques = Questions.all
-    @answe = Answers.where(id: [1])
+    @us = User.all
   end
-  
+
+  def addQuestion
+
+  end
+
+  def addAnswer
+
+  end
+
+  def saveAnswer
+    Questions.create(textQuestion: 'df')
+    flash[:notice] = 'Save'
+  end
+
   def ans 
   	@userc = User.current.id
-	Useranswer.create(users_id: @userc, answers_id: "3")
+    Useranswer.create(users_id: @userc, answers_id: "3")
   	flash[:notice] = 'Save'
 	redirect_to :action => 'index'
   end

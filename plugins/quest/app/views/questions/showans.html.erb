@@ -2,7 +2,11 @@
 <% @ua.each do |u| %>
 	<p>
 	Пользователь: 
-	<%= u.users_id %>
+	<% @us = User.where(id:[u.users_id]) %>
+	<% @us.each do |allusers| %>
+	<%= allusers.firstname %>
+	<%= allusers.lastname %>
+	<% end %>
 	<% @answe = Answers.where(id: [u.answers_id]) %>
 	<% @answe.each do |a| %>
 		<% @a = a.textAnswer %>

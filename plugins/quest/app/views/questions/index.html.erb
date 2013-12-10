@@ -1,7 +1,7 @@
 <h2>Анкета</h2>
 <table>
 	<tr>
-		<td><%= button_to 'Добавить вопрос' %></td>
+		<td><%= button_to 'Добавить вопрос', { :action => 'addQuestion', :controller => 'questions'}, :method => :post %></td>
 		<td><%= button_to 'Показать результаты', { :action => 'showans', :controller => 'questions'}, :method => :post %></td>
 	</tr>
 </table>
