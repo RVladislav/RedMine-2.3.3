@@ -1,4 +1,10 @@
-<%= button_to 'Add new question' %>
+<h2>Анкета</h2>
+<table>
+	<tr>
+		<td><%= button_to 'Добавить вопрос' %></td>
+		<td><%= button_to 'Показать результаты', { :action => 'showans', :controller => 'questions'}, :method => :post %></td>
+	</tr>
+</table>
 <% @i = 1%>
 <% @ques.each do |q| %>
 <p>
@@ -14,4 +20,4 @@
 <% end %>
 <% @i = @i + 1 %>
 <% end %>
-<%= button_to 'Save', { :action => 'ans', :controller => 'questions'}, :method => :post %>
+<%= button_to 'Сохранить', { :action => 'ans', :controller => 'questions'}, :method => :post %>

@@ -4,16 +4,17 @@ class QuestionsController < ApplicationController
   def index
 	@ques = Questions.all
   end
+
+  def showans
+    @ua = Useranswer.all
+    @ques = Questions.all
+    @answe = Answers.where(id: [1])
+  end
   
   def ans 
   	@userc = User.current.id
-  	if Useranswer.new(users_id: @userc, answers_id: "3").invalid?
-  		then
-  			flash[:notice] = 'No save'
-  		else
-  			Useranswer.create(users_id: @userc, answers_id: "3")
-  			flash[:notice] = 'Save'
-  	end 
+	Useranswer.create(users_id: @userc, answers_id: "3")
+  	flash[:notice] = 'Save'
 	redirect_to :action => 'index'
   end
 end
