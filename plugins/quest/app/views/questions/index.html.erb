@@ -1,3 +1,10 @@
+<head>
+	<script type="text/javascript">
+	function SelectRB (path) {
+		document.getElementById(path).checked = true;
+	}
+	</script>
+</head>
 <h2>Анкета</h2>
 <%= render :file => 'questions/admin.html' %> <!-- Вывод панели администратора -->
 <% if User.current.lastname == 'Anonymous' %>
@@ -11,9 +18,7 @@
 		<% end %>
 	<% end %>
 	<% if @check == true %> <!-- Если Вы отвечали на вопросы -->
-		<p>
-			<b>Вы уже отвечали на вопросы</b>
-		</p>
+		
 	<% end %>
 		<% if Questions.count(:id) == 0 %>
 			<b>Здесь пока нет вопросов</b>
@@ -22,27 +27,51 @@
 		<%= form_for :post, :url => { :action => 'saveUserAnswer', :controller => 'questions'} do |f| %>
 			<% @ques.each do |q| %>			
 				<p>
-					<%= @i = @i + 1 %>)
+					<% @i = @i + 1 %>
 					<b>
 						<%= f.label q.textQuestion %>? <!-- Вывод вопроса -->
 					</b>
 					<br>
+					<% @checkFreeAnswer = false %> <!-- Ответ не выделен -->
 					<% @ansMany = Answers.where(questions_id: [q.id]) %> <!-- Вывод соответствующих вариантов ответа -->
 					<% @ansMany.each do |a| %>
 						<% if a.textAnswer != nil %>
-							<%= f.radio_button @i, a.id %> <!-- Кнопка выбора -->
+							<% if Useranswer.where(answers_id: [a.id]).first != nil %>
+								<%= f.radio_button @i, a.id, checked: true, type: "radio" %> <!-- Кнопка выбора -->
+								<% @checkFreeAnswer = true %><!-- Если это ответ пользователя, помечаем, что ответ есть -->
+							<% else %>
+								<%= f.radio_button @i, a.id %>
+							<% end %>
 							<%= f.label a.textAnswer %> <!-- Текст ответа -->
 							<br> <!-- Отступ с новой строки. Работает на все элементы -->					
 						<% end %>
 					<% end %>
-					<% @rt = @i.to_s() + '_'+Answers.where(questions_id: [q.id]).last.id.to_s() %>
-					<%= f.radio_button @i, Answers.where(questions_id: [q.id]).last.id %><!-- Элемент, передающий id последнего варианта ответа -->
-					<% @text = '_' + Answers.where(questions_id: [q.id]).last.id.to_s() %>
-					<%= f.text_field @text %>	<!-- Свободное поле -->
-				</p>				
+					<!-- Если ответы были даны, отмечает старые ответы -->
+					<% if @checkFreeAnswer == false and Useranswer.where(answers_id: Answers.where(questions_id: q.id)).count != 0 %> <!-- Если ответов не было - ответ free И ответы есть -->
+						<% @checkFreeAnswer = true %> <!-- помечаем, что ответ дан -->
+						<!-- Элемент, передающий id последнего варианта ответа -->
+						<%= f.radio_button @i, Useranswer.where(answers_id: Answers.where(questions_id: [q.id]).last.id), checked: true %>
+						<!-- Вывод текста ответа -->
+						<% @text = '_' + Answers.where(questions_id: [q.id]).last.id.to_s() %>
+						<% if Useranswer.where(answers_id: Answers.where(questions_id: [q.id])).last != nil %>
+							<%= f.text_field @text, value: Useranswer.where(answers_id: Answers.where(questions_id: [q.id])).last.answer_freeForm %>
+						<% else %>
+							<% @text = '_' + Answers.where(questions_id: [q.id]).last.id.to_s() %>
+							<% @t = 'SelectRB('+@i.to_s()+')' %>
+							<%= f.text_field @text, onChange:@t.to_s() %>
+						<% end %>
+					<% else %>
+						<%= f.radio_button @i, Answers.where(questions_id: [q.id]).last.id, :id => @i.to_s() %>
+						<% @text = '_' + Answers.where(questions_id: [q.id]).last.id.to_s() %>
+						<% @t = 'SelectRB('+@i.to_s()+')' %>
+						<%= f.text_field @text, onChange:@t.to_s() %>	<!-- Свободное поле -->
+					<% end %>
+				</p>	
+				<img id="spl">
+				<br>
 			<% end %>
 			<% if Questions.count(:id) != 0%>
-				<%= f.submit 'Сохранить'%>
+				<%= f.submit 'Сохранить', id: 'butSend'%>
 			<% end %>
 		<% end %>
 
