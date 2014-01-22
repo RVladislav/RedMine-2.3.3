@@ -1,3 +1,0 @@
-= Quest.Redmine
-
-Description goes here
